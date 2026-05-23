@@ -14,7 +14,7 @@ Quick fixes for common problems.
 
 **Fix**:
 
-1. **Automatic Migration** (v3.61.5+): The bot now automatically migrates legacy files to `src/` during updates and startup.
+1. **Automatic Migration** (v3.61.5+): The bot now automatically migrates Classic files to `src/` during updates and startup.
 
 2. **Manual Migration** (if automatic fails):
 

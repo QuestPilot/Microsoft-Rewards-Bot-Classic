@@ -4,7 +4,6 @@ import { EventEmitter } from "events";
 import { DISCORD, LOGGER_CLEANUP, STOAT } from "../../constants";
 import { getErrorMessage } from "../core/Utils";
 import { loadConfig } from "../state/Load";
-import { sendErrorReport } from "./ErrorReportingWebhook";
 import { Ntfy } from "./Ntfy";
 import { sendStoatLogBatch } from "./StoatWebhook";
 
@@ -500,25 +499,7 @@ export function log(
     process.stderr.write(`[Logger] Failed to enqueue webhook log: ${error}\n`);
   }
 
-  // Automatic error reporting to community webhook (fire and forget)
   if (type === "error") {
-    const errorObj = new Error(cleanStr);
-
-    // FIXED: Single try-catch with proper error visibility
-    // Fire-and-forget but log failures to stderr for debugging
-    void (async () => {
-      try {
-        await sendErrorReport(configData, errorObj, {
-          title,
-          platform: platformText,
-        });
-      } catch (reportError) {
-        // Log to stderr but don't break application
-        const msg = getErrorMessage(reportError);
-        process.stderr.write(`[Logger] Error reporting failed: ${msg}\n`);
-      }
-    })();
-
-    return errorObj;
+    return new Error(cleanStr);
   }
 }

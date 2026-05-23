@@ -4,8 +4,6 @@ import fs from "fs";
 import { createServer } from "http";
 import path from "path";
 import { WebSocket, WebSocketServer } from "ws";
-import { DISCORD } from "../constants";
-import { computeErrorId } from "../util/core/ErrorId";
 import { getErrorMessage } from "../util/core/Utils";
 import { logEventEmitter } from "../util/notifications/Logger";
 import { apiRouter } from "./routes";
@@ -108,118 +106,6 @@ export class DashboardServer {
       res.json({ status: "ok", uptime: process.uptime() });
     });
 
-    // Error reporting endpoint (community error collection)
-    // Adds deterministic error ID and simple in-memory dedupe to avoid spam
-    const dashboardErrorCache = new Map();
-    const DASHBOARD_ERROR_TTL_MS = 60 * 60 * 1000; // 1 hour
-
-    this.app.post("/api/report-error", this.apiLimiter, async (req, res) => {
-      try {
-        const webhookUrl = process.env.DISCORD_ERROR_WEBHOOK_URL;
-        if (!webhookUrl) {
-          dashLog(
-            "Error reporting: DISCORD_ERROR_WEBHOOK_URL not configured",
-            "warn",
-          );
-          return res
-            .status(503)
-            .json({ error: "Error reporting service unavailable" });
-        }
-
-        const payload = req.body;
-        if (!payload?.error) {
-          return res.status(400).json({ error: "Invalid payload" });
-        }
-
-        // Compute deterministic ID and dedupe similar errors for a short window
-        const sanitizedError = String(payload.error || "");
-        const sanitizedStack = payload.stack
-          ? String(payload.stack)
-          : undefined;
-        const computedId = computeErrorId({
-          error: sanitizedError,
-          stack: sanitizedStack,
-          context: payload.context,
-          additionalContext: payload.additionalContext,
-        });
-
-        const now = Date.now();
-        const existing = dashboardErrorCache.get(computedId);
-        if (existing && existing.expires > now) {
-          existing.count = (existing.count || 0) + 1;
-          dashboardErrorCache.set(computedId, existing);
-          dashLog(`Duplicate error suppressed (id=${computedId})`, "warn");
-          return res.json({ success: true, duplicate: true, id: computedId });
-        }
-        dashboardErrorCache.set(computedId, {
-          expires: now + DASHBOARD_ERROR_TTL_MS,
-          count: 1,
-        });
-
-        // Build Discord embed with ID included
-        const embed = {
-          title: "🔴 Bot Error Report",
-          description: `\`\`\`\n${String(payload.error).slice(0, 1900)}\n\`\`\``,
-          color: 0xdc143c,
-          fields: [
-            {
-              name: "Version",
-              value: String(payload.context?.version || "unknown"),
-              inline: true,
-            },
-            {
-              name: "Platform",
-              value: String(payload.context?.platform || "unknown"),
-              inline: true,
-            },
-            {
-              name: "Node",
-              value: String(payload.context?.nodeVersion || "unknown"),
-              inline: true,
-            },
-          ],
-          timestamp: new Date().toISOString(),
-          footer: {
-            text: `Community Error Reporting — Error ID: ${computedId}`,
-          },
-        };
-
-        if (payload.stack) {
-          const stackLines = String(payload.stack)
-            .split("\n")
-            .slice(0, 15)
-            .join("\n");
-          embed.fields.push({
-            name: "Stack Trace",
-            value: `\`\`\`\n${stackLines.slice(0, 1000)}\n\`\`\``,
-            inline: false,
-          });
-        }
-
-        // Send to Discord (use native axios, not AxiosClient)
-        const axios = (await import("axios")).default;
-        await axios.post(
-          webhookUrl,
-          {
-            username: DISCORD.WEBHOOK_USERNAME,
-            avatar_url: DISCORD.AVATAR_URL,
-            embeds: [embed],
-          },
-          { timeout: DISCORD.WEBHOOK_TIMEOUT },
-        );
-
-        dashLog(`Error report sent to Discord (id=${computedId})`, "log");
-        return res.json({
-          success: true,
-          message: "Error report received",
-          id: computedId,
-        });
-      } catch (error) {
-        dashLog(`Error reporting failed: ${getErrorMessage(error)}`, "error");
-        return res.status(500).json({ error: "Failed to send error report" });
-      }
-    });
-
     // Serve dashboard UI
     this.app.get("/", this.dashboardLimiter, (_req, res) => {
       const indexPath = path.join(__dirname, "../../public/index.html");
@@ -234,11 +120,12 @@ export class DashboardServer {
       } else {
         res.status(200).send(`
           <!DOCTYPE html>
-          <html><head><title>Dashboard - API Only Mode</title></head>
+          <html><head><title>Microsoft Rewards Bot Classic - API Only Mode</title></head>
           <body style="font-family: sans-serif; padding: 40px; text-align: center;">
-            <h1>Dashboard API Active</h1>
+            <h1>Microsoft Rewards Bot Classic API Active</h1>
             <p>Frontend UI not found. API endpoints are available:</p>
             <ul style="list-style: none; padding: 0;">
+              <li><a href="/api/info">GET /api/info</a></li>
               <li><a href="/api/status">GET /api/status</a></li>
               <li><a href="/api/accounts">GET /api/accounts</a></li>
               <li><a href="/api/logs">GET /api/logs</a></li>

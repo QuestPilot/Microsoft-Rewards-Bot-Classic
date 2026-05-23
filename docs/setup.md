@@ -4,18 +4,15 @@ Get the bot ready before your first run.
 
 ## Prerequisites
 
-- **Node.js 20 or newer** - [Download here](https://nodejs.org/)
+- **Node.js 22 or newer** - [Download here](https://nodejs.org/)
 - **Git** (optional) - For cloning the repository
 
 ## Installation
 
 ```bash
-# Clone the repository (Legacy branch for old dashboard)
-git clone -b legacy https://git.justw.tf/LightZirconite/Microsoft-Rewards-Bot.git
-cd Microsoft-Rewards-Bot
-
-# For V4 (new dashboard), use:
-# git clone -b main https://git.justw.tf/LightZirconite/Microsoft-Rewards-Bot.git
+# Clone the repository (Classic repository for old dashboard)
+git clone https://github.com/QuestPilot/Microsoft-Rewards-Bot-Classic.git
+cd Microsoft-Rewards-Bot-Classic
 
 # Install dependencies (happens automatically on first run)
 npm install
@@ -32,17 +29,17 @@ npm install
 2. Edit src/accounts.jsonc with your Microsoft account(s):
 
 ```jsonc
-[
-  {
-    "email": "your-email@outlook.com",
-    "password": "your-password",
-  },
-  {
-    "email": "second-account@outlook.com",
-    "password": "another-password",
-    "totp": "YOUR_2FA_SECRET", // Optional: for accounts with 2FA
-  },
-]
+{
+  "accounts": [
+    {
+      "enabled": true,
+      "email": "your-email@outlook.com",
+      "password": "your-password",
+      "totp": "", // Optional: for accounts with 2FA
+      "recoveryEmail": ""
+    }
+  ]
+}
 ```
 
 ## Optional: 2FA Support
@@ -60,7 +57,13 @@ For accounts that need a proxy:
 {
   "email": "account@outlook.com",
   "password": "password",
-  "proxy": "http://user:pass@proxy.example.com:8080",
+  "proxy": {
+    "proxyAxios": true,
+    "url": "proxy.example.com",
+    "port": 8080,
+    "username": "user",
+    "password": "pass"
+  },
 }
 ```
 

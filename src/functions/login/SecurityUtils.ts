@@ -58,7 +58,7 @@ export class SecurityUtils {
   public getDocsUrl(anchor?: string) {
     const base =
       process.env.DOCS_BASE?.trim() ||
-      "https://git.justw.tf/LightZirconite/Microsoft-Rewards-Bot/src/branch/legacy/docs/troubleshooting.md";
+      "https://github.com/QuestPilot/Microsoft-Rewards-Bot-Classic/blob/main/docs/troubleshooting.md";
     const map: Record<string, string> = {
       "recovery-email-mismatch": "#recovery-email-mismatch",
       "we-cant-sign-you-in": "#we-cant-sign-you-in-blocked",

@@ -1,6 +1,6 @@
 {
   // === GENERAL ===
-  "baseURL": "https://lgtw.tf/Microsoft-Rewards-Bot-Legacy",
+  "baseURL": "https://rewards.bing.com/dashboard",
   "sessionPath": "sessions",
   "dryRun": false,
   // === EXECUTION ===
@@ -149,11 +149,5 @@
     "dockerMode": "auto", // Docker detection ("auto", "force-docker", "force-host")
     "autoUpdateConfig": true, // Automatically update config.jsonc
     "autoUpdateAccounts": false, // Automatically update accounts.jsonc
-  },
-  // === ERROR REPORTING ===
-  // Help improve the project by automatically reporting errors
-  // NO sensitive data is sent (emails, passwords, proxies are sanitized)
-  "errorReporting": {
-    "enabled": true, // Enable anonymous error reporting to maintainers
   },
 }

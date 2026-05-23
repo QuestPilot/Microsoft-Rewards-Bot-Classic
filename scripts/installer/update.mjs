@@ -31,6 +31,7 @@ import {
 } from "node:fs";
 import { get as httpsGet } from "node:https";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // =============================================================================
 // UTILITY FUNCTIONS
@@ -128,28 +129,28 @@ function getBranchConfig() {
   try {
     if (existsSync(branchConfigPath)) {
       const config = JSON.parse(readFileSync(branchConfigPath, "utf8"));
-      const rawHost = config.repository?.host || "git.justw.tf";
+      const rawHost = config.repository?.host || "github.com";
       const normalizedHost = String(rawHost)
         .replace(/^https?:\/\//, "")
         .replace(/\/+$/, "");
 
       return {
-        branch: config.branch || "legacy",
-        owner: config.repository?.owner || "LightZirconite",
-        repo: config.repository?.name || "Microsoft-Rewards-Bot",
-        host: normalizedHost || "git.justw.tf",
+        branch: config.branch || "main",
+        owner: config.repository?.owner || "QuestPilot",
+        repo: config.repository?.name || "Microsoft-Rewards-Bot-Classic",
+        host: normalizedHost || "github.com",
       };
     }
   } catch {
     // Fallback to defaults
   }
 
-  // Default fallback for legacy branch on the self-hosted forge.
+  // Default fallback for the standalone Classic GitHub repository.
   return {
-    branch: "legacy",
-    owner: "LightZirconite",
-    repo: "Microsoft-Rewards-Bot",
-    host: "git.justw.tf",
+    branch: "main",
+    owner: "QuestPilot",
+    repo: "Microsoft-Rewards-Bot-Classic",
+    host: "github.com",
   };
 }
 
@@ -157,7 +158,19 @@ function getBranchConfig() {
  * Build repository URLs from branch configuration
  */
 function getRepositoryUrls(branchConfig) {
+  const isGitHub = branchConfig.host === "github.com";
   const repoBaseUrl = `https://${branchConfig.host}/${branchConfig.owner}/${branchConfig.repo}`;
+
+  if (isGitHub) {
+    const rawBaseUrl = `https://raw.githubusercontent.com/${branchConfig.owner}/${branchConfig.repo}/${branchConfig.branch}`;
+    return {
+      repoBaseUrl,
+      rawBaseUrl,
+      packageUrl: `${rawBaseUrl}/package.json`,
+      archiveUrl: `https://codeload.github.com/${branchConfig.owner}/${branchConfig.repo}/zip/refs/heads/${branchConfig.branch}`,
+    };
+  }
+
   return {
     repoBaseUrl,
     rawBaseUrl: `${repoBaseUrl}/raw/branch/${branchConfig.branch}`,
@@ -954,7 +967,6 @@ async function performUpdate() {
   // Step 6: Copy files selectively
   process.stdout.write("📦 Updating files...");
   const itemsToUpdate = [
-    "api",
     "assets",
     "docker",
     "scripts",
@@ -966,7 +978,6 @@ async function performUpdate() {
     ".dockerignore",
     ".eslintignore",
     ".eslintrc.json",
-    "vercel.json",
     "package.json",
     "package-lock.json",
     "tsconfig.json",
@@ -1180,6 +1191,8 @@ async function performUpdate() {
   }
 }
 
+export { getBranchConfig, getRepositoryUrls, stripJsonComments };
+
 // =============================================================================
 // ENTRY POINT
 // =============================================================================
@@ -1253,9 +1266,15 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error("\n❌ Update failed with error:", err);
-  console.error("\nCleaning up and reverting...");
-  cleanup();
-  process.exit(1);
-});
+const isCliEntrypoint =
+  process.argv[1] &&
+  fileURLToPath(import.meta.url) === process.argv[1];
+
+if (isCliEntrypoint) {
+  main().catch((err) => {
+    console.error("\n❌ Update failed with error:", err);
+    console.error("\nCleaning up and reverting...");
+    cleanup();
+    process.exit(1);
+  });
+}

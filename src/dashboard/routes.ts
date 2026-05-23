@@ -23,6 +23,24 @@ function getAccountHistory(): AccountHistory {
 
 // Short alias for the centralized error message extractor
 const getErr = getErrorMessage;
+let packageInfoCache: { version: string; name: string } | null = null;
+
+function getPackageInfo(): { version: string; name: string } {
+  if (packageInfoCache) return packageInfoCache;
+
+  try {
+    const packagePath = path.join(__dirname, "../../package.json");
+    const parsed = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+    packageInfoCache = {
+      version: String(parsed.version || "unknown"),
+      name: String(parsed.name || "microsoft-rewards-bot"),
+    };
+  } catch {
+    packageInfoCache = { version: "unknown", name: "microsoft-rewards-bot" };
+  }
+
+  return packageInfoCache;
+}
 
 // Helper to load accounts if not already loaded
 function ensureAccountsLoaded(): void {
@@ -45,6 +63,15 @@ apiRouter.get("/status", (_req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ error: getErr(error) });
   }
+});
+
+// GET /api/info - Public dashboard metadata
+apiRouter.get("/info", (_req: Request, res: Response) => {
+  res.json({
+    project: "Microsoft Rewards Bot Classic",
+    repository: "https://github.com/QuestPilot/Microsoft-Rewards-Bot-Classic",
+    ...getPackageInfo(),
+  });
 });
 
 // GET /api/accounts - List all accounts with masked emails

@@ -83,9 +83,9 @@ export const DISCORD = {
   COLOR_BLUE: 0x3498db,
   COLOR_GREEN: 0x00d26a,
   COLOR_GRAY: 0x95a5a6,
-  WEBHOOK_USERNAME: "Microsoft-Rewards-Bot",
+  WEBHOOK_USERNAME: "Microsoft Rewards Bot Classic",
   AVATAR_URL:
-    "https://git.justw.tf/LightZirconite/Microsoft-Rewards-Bot/raw/branch/legacy/assets/logo.png",
+    "https://raw.githubusercontent.com/QuestPilot/Microsoft-Rewards-Bot-Classic/main/assets/logo.png",
 } as const;
 
 export const LOGGER_CLEANUP = {
@@ -98,7 +98,7 @@ export const STOAT = {
   RATE_LIMIT_DELAY: 500,
   MAX_EMBED_LENGTH: 2000,
   DEBOUNCE_DELAY: 750,
-  WEBHOOK_USERNAME: "Microsoft-Rewards-Bot",
+  WEBHOOK_USERNAME: "Microsoft Rewards Bot Classic",
   AVATAR_URL: DISCORD.AVATAR_URL,
 } as const;
 

@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import ms from "ms";
 import { secureRandom, secureRandomShuffle } from "../security/SecureRandom";
 
@@ -176,7 +178,7 @@ export class Util {
       throw new Error("Invalid input type. Expected string or number.");
     }
 
-    const milisec = ms(input.toString());
+    const milisec = ms(input.toString() as ms.StringValue);
     if (!milisec || !Number.isFinite(milisec)) {
       throw new Error(
         'The string provided cannot be parsed to a valid time! Use a format like "1 min", "1m" or "1 minutes"',
@@ -329,22 +331,20 @@ export function extractBalancedObject(
 
 /**
  * Get the configured Git branch for auto-updates and remote resources
- * Reads from .update-branch.json if available, otherwise defaults to 'legacy'
+ * Reads from .update-branch.json if available, otherwise defaults to 'main'
  * @returns Branch name to use for remote raw URLs
  */
 export function getUpdateBranch(): string {
   try {
-    const fs = require("fs");
-    const path = require("path");
     const configPath = path.join(process.cwd(), ".update-branch.json");
 
     if (fs.existsSync(configPath)) {
       const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-      return config.branch || "legacy";
+      return config.branch || "main";
     }
   } catch {
     // Fallback to default
   }
 
-  return "legacy"; // Default fallback for legacy installations
+  return "main";
 }

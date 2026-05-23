@@ -1,47 +1,27 @@
-# Microsoft Rewards Bot Docs
+# Microsoft Rewards Bot Classic Docs
 
-Welcome to the **Legacy version** documentation for the old Microsoft Rewards dashboard.
+Documentation for Microsoft Rewards Bot Classic, the old-dashboard edition of the Microsoft Rewards automation project.
 
-> 🚀 **Looking for V4?** Check out [V4 on the main branch](https://git.justw.tf/LightZirconite/Microsoft-Rewards-Bot/src/branch/main/) for the new dashboard interface.
+## Start Here
 
-These guides cover everything from first-time setup to advanced configuration.
+| Goal | Read this |
+| --- | --- |
+| Install the bot | [Setup](setup.md) |
+| Add accounts and change behavior | [Configuration](configuration.md) |
+| Run the bot or dashboard | [Running](running.md) |
+| Use the local web dashboard | [Dashboard](dashboard.md) |
+| Schedule daily runs | [Scheduling](scheduling.md) |
+| Configure webhooks or ntfy | [Notifications](notifications.md) |
+| Run in Docker | [Docker](docker.md) |
+| Update safely | [Update](update.md) |
+| Fix common issues | [Troubleshooting](troubleshooting.md) |
 
-## Getting Started
+## Feature Notes
 
-- **[Setup](setup.md)** — Install prerequisites and configure your accounts.
-- **[Running](running.md)** — Commands to start the bot.
-- **[Modes](modes.md)** — Understand the different running modes.
+- [Modes](modes.md) explains one-time, dashboard, scheduled, and Docker modes.
+- [Config merging](config-merging.md) explains how new options are added without overwriting existing values.
+- [Account creation](account-creation.md) documents the experimental account creator and its risks.
 
-## Configuration
+## Repository
 
-- **[Configuration](configuration.md)** — Adjust bot behavior via `config.jsonc`.
-- **[Config Merging](config-merging.md)** — How automatic config updates preserve your settings.
-- **[Scheduling](scheduling.md)** — Automate daily runs with built-in scheduler.
-- **[Notifications](notifications.md)** — Discord webhooks and NTFY push alerts.
-
-## Features
-
-- **[Dashboard](dashboard.md)** — Real-time web monitoring panel.
-- **[Account Creation](account-creation.md)** — Create new Microsoft accounts (use with caution).
-- **[Error Reporting](error-reporting.md)** — Automatic anonymized bug reports.
-
-## Deployment
-
-- **[Docker](docker.md)** — Run the bot in a container with scheduling.
-- **[Update](update.md)** — Keep the project up to date.
-
-## Help
-
-- **[Troubleshooting](troubleshooting.md)** — Quick fixes for common issues.
-
----
-
-## Quick Reference
-
-| Command                  | Description                |
-| ------------------------ | -------------------------- |
-| `npm start`              | Build and run the bot      |
-| `npm run dashboard`      | Start web monitoring panel |
-| `npm run creator`        | Account creation wizard    |
-| `npm run dev`            | Development mode           |
-| `npm run docker:compose` | Run in Docker              |
+Classic is maintained at [QuestPilot/Microsoft-Rewards-Bot-Classic](https://github.com/QuestPilot/Microsoft-Rewards-Bot-Classic).

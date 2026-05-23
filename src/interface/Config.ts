@@ -32,7 +32,6 @@ export interface Config {
   queryDiversity?: ConfigQueryDiversity; // Multi-source query generation
   dashboard?: ConfigDashboard; // Local web dashboard for monitoring and control
   scheduling?: ConfigScheduling; // Automatic scheduler configuration (cron/Task Scheduler)
-  errorReporting?: ConfigErrorReporting; // Automatic error reporting to community webhook
   antiDetection?: ConfigAntiDetection; // Advanced anti-detection configuration
 }
 
@@ -192,13 +191,6 @@ export interface ConfigDashboard {
   enabled?: boolean; // auto-start dashboard with bot (default: false)
   port?: number; // dashboard server port (default: 3000)
   host?: string; // bind address (default: 127.0.0.1)
-}
-
-export interface ConfigErrorReporting {
-  enabled?: boolean; // master toggle for error reporting
-  apiUrl?: string; // Vercel API endpoint URL (default: official endpoint)
-  secret?: string; // optional secret for bypassing rate limits
-  webhooks?: string[]; // Optional array of webhook URLs (plain or base64-encoded)
 }
 
 export interface ConfigScheduling {

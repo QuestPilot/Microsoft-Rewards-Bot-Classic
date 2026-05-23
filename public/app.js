@@ -28,9 +28,37 @@ document.addEventListener("DOMContentLoaded", () => {
   initWebSocket();
   initCharts();
   loadInitialData();
+  loadAppInfo();
   startUptimeTimer();
   loadTheme();
 });
+
+function iconSvg(pathData, className) {
+  return (
+    '<svg class="icon ' +
+    (className || "") +
+    '" viewBox="0 0 24 24"><path d="' +
+    pathData +
+    '"></path></svg>'
+  );
+}
+
+function statusDotSvg() {
+  return '<svg class="icon icon-sm status-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg>';
+}
+
+function loadAppInfo() {
+  fetch("/api/info")
+    .then((r) => r.json())
+    .then((info) => {
+      const version = document.getElementById("version");
+      if (version) version.textContent = info.version ? "v" + info.version : "Classic";
+    })
+    .catch(() => {
+      const version = document.getElementById("version");
+      if (version) version.textContent = "Classic";
+    });
+}
 
 // WebSocket
 function initWebSocket() {
@@ -115,9 +143,7 @@ function updateConnectionStatus(connected) {
   if (el) {
     el.className =
       "connection-status " + (connected ? "connected" : "disconnected");
-    el.innerHTML =
-      '<i class="fas fa-circle"></i> ' +
-      (connected ? "Connected" : "Disconnected");
+    el.innerHTML = statusDotSvg() + (connected ? "Connected" : "Disconnected");
   }
 }
 
@@ -404,11 +430,11 @@ function updateChartsWithRealData(histories) {
 }
 
 function refreshData() {
-  const btn = document.querySelector('[onclick="refreshData()"] i');
-  if (btn) btn.classList.add("fa-spin");
+  const btn = document.querySelector('[onclick="refreshData()"] svg');
+  if (btn) btn.classList.add("spin");
   loadInitialData();
   setTimeout(() => {
-    if (btn) btn.classList.remove("fa-spin");
+    if (btn) btn.classList.remove("spin");
     showToast("Data refreshed", "success");
   }, 500);
 }
@@ -480,7 +506,8 @@ function resetJobState() {
     "Reset Job State",
     "<p>This will clear all completed task records for today.</p>" +
       '<p style="color: var(--accent-orange); margin-top: 1rem;">' +
-      '<i class="fas fa-exclamation-triangle"></i> This cannot be undone.</p>',
+      iconSvg("M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01") +
+      " This cannot be undone.</p>",
     [
       { text: "Cancel", cls: "btn btn-secondary", action: "closeModal()" },
       {
@@ -530,7 +557,8 @@ function updateBotStatus(status) {
     badge.className =
       "status-badge " + (status.running ? "status-running" : "status-stopped");
     badge.innerHTML =
-      '<i class="fas fa-circle"></i><span>' +
+      statusDotSvg() +
+      "<span>" +
       (status.running ? "RUNNING" : "STOPPED") +
       "</span>";
   }
@@ -970,22 +998,25 @@ function showToast(message, type) {
   toast.className = "toast " + type;
 
   const icons = {
-    success: "fa-check-circle",
-    error: "fa-times-circle",
-    warning: "fa-exclamation-circle",
-    info: "fa-info-circle",
+    success: "M20 6 9 17l-5-5",
+    error: "M18 6 6 18M6 6l12 12",
+    warning: "M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01",
+    info: "M12 16v-4m0-4h.01M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z",
   };
 
-  toast.innerHTML =
-    '<i class="fas ' +
-    (icons[type] || icons.info) +
-    '"></i><span>' +
-    message +
-    "</span>";
+  const icon = document.createElement("span");
+  icon.className = "toast-icon";
+  icon.innerHTML = iconSvg(icons[type] || icons.info);
+
+  const text = document.createElement("span");
+  text.textContent = message;
+
+  toast.appendChild(icon);
+  toast.appendChild(text);
   container.appendChild(toast);
 
   setTimeout(() => {
-    toast.style.animation = "slideIn 0.3s ease reverse";
+    toast.style.animation = "slideInRight 0.3s ease reverse";
     setTimeout(() => {
       toast.remove();
     }, 300);
@@ -1032,8 +1063,10 @@ function toggleTheme() {
     localStorage.setItem("theme", isLight ? "light" : "dark");
   } catch (e) {}
 
-  const btn = document.querySelector(".theme-toggle i");
-  if (btn) btn.className = isLight ? "fas fa-sun" : "fas fa-moon";
+  const toggle = document.querySelector(".theme-toggle");
+  if (toggle) {
+    toggle.setAttribute("title", isLight ? "Use dark theme" : "Use light theme");
+  }
 
   updateChartsTheme(isLight);
 }
@@ -1043,8 +1076,8 @@ function loadTheme() {
     const theme = localStorage.getItem("theme");
     if (theme === "light") {
       document.body.classList.add("light-theme");
-      const btn = document.querySelector(".theme-toggle i");
-      if (btn) btn.className = "fas fa-sun";
+      const toggle = document.querySelector(".theme-toggle");
+      if (toggle) toggle.setAttribute("title", "Use dark theme");
       updateChartsTheme(true);
     }
   } catch (e) {}

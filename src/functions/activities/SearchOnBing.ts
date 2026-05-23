@@ -83,12 +83,11 @@ export class SearchOnBing extends Workers {
         );
         queries = JSON.parse(data);
       } else {
-        // Fetch from the repo directly so the user doesn't need to redownload the script for the new activities
-        // Uses dynamic branch from .update-branch.json (legacy or main)
+        // Fetch from the Classic repo directly so users get updated activity answers without reinstalling.
         const branch = getUpdateBranch();
         const response = await this.bot.axios.request({
           method: "GET",
-          url: `https://git.justw.tf/LightZirconite/Microsoft-Rewards-Bot/raw/branch/${branch}/src/functions/queries.json`,
+          url: `https://raw.githubusercontent.com/QuestPilot/Microsoft-Rewards-Bot-Classic/${branch}/src/functions/queries.json`,
         });
         queries = response.data;
       }

@@ -195,7 +195,9 @@ function normalizeConfig(raw: unknown): Config {
   const scheduling = buildSchedulingConfig(n.scheduling);
 
   const cfg: Config = {
-    baseURL: n.baseURL ?? "https://lgtw.tf/Microsoft-Rewards-Bot-Legacy",
+    baseURL:
+      n.baseURL ??
+      "https://rewards.bing.com/dashboard",
     sessionPath: n.sessionPath ?? "sessions",
     browser,
     parallel,

@@ -72,7 +72,7 @@ Press **CTRL+C** to stop the scheduler and exit cleanly.
 - **Description:** Daily execution time in your local timezone
 - **Examples:** `"09:00"`, `"21:30"`, `"00:00"`
 
-### Legacy `scheduling.cron.schedule` (deprecated)
+### Older `scheduling.cron.schedule` (deprecated)
 - **Type:** `string` (cron expression)
 - **Description:** Advanced cron format (e.g., `"0 9 * * *"`)
 - **Note:** Supported for backwards compatibility. Use `time` instead for simplicity.
@@ -165,9 +165,9 @@ environment:
 - Review crash logs
 - Ensure no SIGTERM/SIGINT signals from system
 
-## Advanced: Cron Format (Legacy)
+## Advanced: Cron Format
 
-For users who need complex schedules (e.g., multiple times per day, specific weekdays), you can use the legacy cron format:
+For users who need complex schedules (e.g., multiple times per day, specific weekdays), you can use the advanced cron format:
 
 ```jsonc
 {

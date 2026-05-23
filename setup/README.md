@@ -115,7 +115,7 @@ npm run build
 If automatic updates fail, manually update:
 
 ```bash
-git pull origin legacy
+git pull origin main
 npm install
 npm run build
 ```

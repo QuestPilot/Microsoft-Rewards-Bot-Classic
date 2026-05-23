@@ -546,7 +546,7 @@ export class Login {
 
   // --------------- Main Flow ---------------
   private async tryReuseExistingSession(page: Page): Promise<boolean> {
-    const homeUrl = "https://lgtw.tf/Microsoft-Rewards-Bot-Legacy";
+    const homeUrl = this.bot.config.baseURL || URLS.REWARDS_DASHBOARD;
     try {
       const { success: navigationSucceeded, recoveryUsed } =
         await this.navigateWithRetry(page, homeUrl, "LOGIN");
@@ -586,9 +586,9 @@ export class Login {
       await this.bot.utils.wait(250);
 
       // TRACKING SITE DETECTION: Wait for automatic redirect from tracking page
-      let pageUrl = page.url();
+      const pageUrl = page.url();
       if (
-        pageUrl.includes("lgtw.tf/Microsoft-Rewards-Bot-Legacy") ||
+        pageUrl.includes("lgtw.tf") ||
         pageUrl.includes("about:blank")
       ) {
         this.bot.log(
